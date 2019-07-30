@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+
+.flex-container {
+    display: -webkit-flex;
+    display: flex;
+    background-color: lightgrey;
+    -webkit-justify-content:center;
+    justify-content: center;
+    align-items:center;
+    width: 1200px;
+    height: auto;
+    resize:both;
+}
+
+.flex-item {
+    border:  2px solid #a1a1a1 ;
+    margin:  10px;
+    padding: 5px;
+    background-color: lightseagreen;
+    height: auto;
+}
+    </style>
+    <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+</head>
+<body>
+<div>
+ <form name="postdns" id="form" >
+     <div class="flex-container">
+
+         <div class="flex-item" >
+             <div>
+                 <h3 style="color: 	#1E90FF">dnsmasq.conf</h3>
+             </div>
+             <div>
+                 <textarea  name="dnscontent"   id="dnscontent" rows="35" cols="50">{{dnscontent}}</textarea>
+             </div>
+                 <!--<lable for="dns" >dnsmasq.conf配置</lable>-->
+         </div>
+
+         <div  class="flex-item">
+             <div>
+                 <h3 style="color: 	#1E90FF">hosts</h3>
+             </div>
+             <!--<label for="host">hosts配置</label>-->
+                <textarea name="hostcontent"   id="hostcontent"   rows="35"    cols="50" >{{hostcontent}}</textarea>
+         </div>
+
+         <div>
+           状态: <span id="status">{{dnsinfo.status}}</span>
+              <br/>
+           进程: <span id="pid">{{dnsinfo.pid}}</span>
+              <br/>
+           <span id="listen">监听: {{host}}</span>
+             <br/>
+           <button  type="button" onclick="submitData('restart')">重启</button>
+             <br/>
+           <button  type="button" onclick="submitData('post')">提交</button>
+             <br/>
+           <button  type="button" onclick="submitData('check')">检查</button>
+         </div>
+     </div>
+</form>
+</div>
+
+<script>
+
+            function submitData (params) {
+            var  dnscontent  =  $("#dnscontent").val();
+            var  hostcontent =  $("#hostcontent").val();
+            $.ajax(
+             {
+                 url: "/postdns",
+                 type: "POST",
+                 dataType: "json",
+                 async:true,
+                 data: JSON.stringify({ dnscontent: dnscontent, hostcontent: hostcontent,ops: params}),
+                 success: function (result) {
+                     if(params == 'restart'){
+                         $('#status').text(result['dnsinfo']['status'])
+                         $('#pid').text(result['dnsinfo']['pid'])
+                     }
+                     alert(result['status']);
+
+                 },
+                 error: function (result) {
+                     alert(result['status']);
+                 }
+             });
+
+        }
+</script>
+</body>
+</html>
